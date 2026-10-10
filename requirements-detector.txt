@@ -1,0 +1,3 @@
+-r requirements.txt
+# Exact resolved GPU environment must be recorded after the first local run.
+ultralytics>=8.3,<9

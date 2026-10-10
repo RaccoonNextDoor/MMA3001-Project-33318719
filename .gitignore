@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dataset, trained weights and local credentials are not source code.
+data/
+runs/
+*.pt
+*.joblib
+*.zip
+.env*
+.venv/
