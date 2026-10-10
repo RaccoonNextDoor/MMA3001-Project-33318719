@@ -1,0 +1,72 @@
+{
+  "archive_sha256": "379f6535f9560e72e16a8daf7a7231a61449910bde9dbbd8acc32be617f4a4d5",
+  "original": {
+    "train": {
+      "images": 3349,
+      "annotations": 2923,
+      "categories": {
+        "packaging-error": 1712,
+        "unsealed": 1055,
+        "wrinkle": 18,
+        "loose-meat": 66,
+        "twisted-meat": 72
+      }
+    },
+    "valid": {
+      "images": 120,
+      "annotations": 121,
+      "categories": {
+        "unsealed": 81,
+        "packaging-error": 34,
+        "loose-meat": 3,
+        "twisted-meat": 3
+      }
+    },
+    "test": {
+      "images": 80,
+      "annotations": 79,
+      "categories": {
+        "unsealed": 49,
+        "loose-meat": 3,
+        "twisted-meat": 4,
+        "packaging-error": 23
+      }
+    }
+  },
+  "retained": {
+    "train": {
+      "images": 3313,
+      "sources": 1073,
+      "annotations": 2887,
+      "empty": 684
+    },
+    "valid": {
+      "images": 119,
+      "sources": 119,
+      "annotations": 120,
+      "empty": 14
+    },
+    "test": {
+      "images": 80,
+      "sources": 80,
+      "annotations": 79,
+      "empty": 12
+    }
+  },
+  "excluded_images": 37,
+  "clipped_boxes": 0,
+  "classes": [
+    "loose-meat",
+    "packaging-error",
+    "twisted-meat",
+    "unsealed",
+    "wrinkle"
+  ],
+  "policy": "Test > validation > training; connected components of source filename and byte hash",
+  "limitations": [
+    "Source filenames are inferred groups, not verified tray IDs.",
+    "Adjacent frames may show the same tray; source-disjoint is not tray-disjoint.",
+    "No annotation means no labelled defect, not certified product safety.",
+    "Wrinkle is absent from original validation and test annotations."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "status": "DEVELOPMENT VALIDATION ONLY - test not evaluated",
+  "target": "annotated defect count per image",
+  "selected_model": "median",
+  "grid": 2,
+  "selection_metric": "validation MAE",
+  "train_unique_sources": 1073,
+  "validation_unique_sources": 119,
+  "metrics": {
+    "mae": 0.24369747899159663,
+    "rmse": 0.6011194039582536,
+    "r2": -0.00019546520719337934
+  },
+  "feature_extraction_seconds": {
+    "2": 4.69873978600026,
+    "4": 4.806479126999875
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+    "sklearn": "1.8.0",
+    "numpy": "2.3.5",
+    "threads": 2
+  },
+  "limitations": [
+    "Image counts are not object detection or verified pass/fail labels.",
+    "Validation used for selection; scores are optimistic for final generalisation.",
+    "Adjacent-frame/tray correlation remains unresolved.",
+    "Timing is batch prediction only; excludes image decoding and descriptors."
+  ]
+}
