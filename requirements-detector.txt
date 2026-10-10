@@ -1,3 +1,5 @@
 -r requirements.txt
-# Exact resolved GPU environment must be recorded after the first local run.
-ultralytics>=8.3,<9
+# Version used for the recorded laptop experiments.
+ultralytics==8.4.175
+# Install the appropriate PyTorch CUDA build separately.
+# Recorded environment: results/detector_validation/gpu-environment.txt

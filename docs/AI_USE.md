@@ -1,27 +1,16 @@
-# AI contribution log and student reflection worksheet
+# AI contribution and student reflection
 
-## 2026-10-10 — Initial implementation
-ChatGPT/Codex reviewed the supplied brief and course-note extracts, audited the
-COCO dataset, identified duplicate source names across splits and rare classes,
-and generated the initial preparation code, regression experiments, detector CLI,
-tests and documentation. Most initial repository code and prose were AI-generated.
-The student selected the supplied dataset, provided materials/hardware/deadline,
-and authorised repository development. This is not evidence of independent student
-implementation and must not be described as such.
+ChatGPT/Codex substantially accelerated the implementation and analysis of this project. It assisted with reviewing requirements, proposing methods, auditing data, generating most of the initial code and documentation, troubleshooting execution, interpreting exported results and drafting this report. Its approximate contribution was most of the implementation and written material; I did not measure a precise percentage. I selected the supplied topic, provided the course materials and hardware information, and ran the GPU experiments on my laptop. AI assistance allowed me to obtain results quickly, but successful execution did not mean that the model was reliable or that I fully understood its operation.
 
-Verification: actual archive decoding and annotation checks; analytical synthetic
-geometry/feature/metric tests; real regression validation runs; generated HTML docs.
-Detector GPU training has NOT yet been executed in the assistant environment.
+I checked the run outputs through shell commands and personally inspected the losses reported at each epoch. These checks helped me follow the progress of training and review its numerical behaviour. They did not, by themselves, verify the correctness of every prediction or explain how the network reached its decisions. The results were uneven across defect classes: unsealed packaging was detected more successfully than the other categories, while overall test recall was 46.8%. This was a packaging-defect experiment, not an assessment of meat quality or food safety.
 
-Corrections during development: initial advice implied project approval was needed
-for all topics; the brief limits that requirement to student-proposed projects.
-Initial raw dataset splits were found to contain overlapping source images and were
-therefore cleaned before training. Shell invocation from the parent directory was
-corrected to use the repository directory. Record further errors and corrections here.
+My main remaining limitation is understanding the model beyond its observable inputs and outputs. I cannot yet fully explain how its internal architecture produces a particular detection, why recognition performance differs so substantially between classes, or which learned visual features cause a success or failure. Although I can inspect the losses and reported metrics, the decision process still feels like a black box. At times, obtaining a prediction without being able to explain its reasoning felt more like observing an unexplained outcome than following a transparent engineering calculation.
 
-## To be completed by the student before submission
-- Explain the methods, data split and metric choices in your own words.
-- State which model/scope decisions you reviewed and adopted or changed.
-- Record what you independently checked and what you learned.
-- Describe any remaining uncertainty or unhelpful AI suggestions.
-- Give an honest approximate contribution level; do not claim unaided authorship.
+This experience highlighted the difference between using an AI-assisted workflow and understanding the model it implements. AI made experimentation more accessible, but it also made it possible to progress faster than my conceptual understanding. My next learning priorities are to connect the network architecture and loss functions to the observed results, distinguish confidence from correctness, and examine individual errors alongside class-level metrics. I should treat possible explanations, such as visual ambiguity or class imbalance, as hypotheses until they have been tested.
+
+The broader workflow included AI-assisted archive checks, analytical tests and comparisons against saved results. These should not be confused with the checks I performed personally. Some assistance required correction: the initial advice about project approval was revised after checking the brief, source overlaps were removed before training, and execution-path issues were resolved. I remain responsible for reviewing the submitted work, acknowledging the extent of AI assistance and being clear about both what I checked and what I do not yet understand.
+
+
+
+## Finalisation
+The assistant updated result documentation, regenerated HTML documentation, checked tests and packaged a full clone. These actions were AI-assisted rather than independent student checks.

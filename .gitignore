@@ -227,3 +227,6 @@ runs/
 *.zip
 .env*
 .venv/
+
+# The frozen checkpoint is included for reproducibility.
+!models/yolov8n_320_best.pt

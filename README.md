@@ -1,128 +1,132 @@
-# MMA3001: Pork-rasher packaging inspection
+# MMA3001 Pork rasher packaging inspection
 
-**Status: development baseline completed; GPU detector experiments and final report pending.**
-Submission deadline supplied by student: 23 October 2026.
+**Status: experiments completed, frozen final test scored, report and presentation included.**
+Student ID: 33318719. Deadline supplied by student: 23 October 2026.
 
-This project studies automated inspection of RGB pork-packaging images. The detector
-will output defect class, box and confidence. A separate Week-5 regression experiment
-predicts the number of annotated defects per image and provides a common count-output
-baseline. It does not predict meat freshness, microbial safety or certified pass/fail.
+This project locates visible packaging and meat-placement defects in RGB images.
+All five supplied classes were trained: loose-meat, packaging-error, twisted-meat,
+unsealed and wrinkle. The export treats these as separate labels, although an
+unsealed package is a packaging error in ordinary engineering language. The precise
+annotation rule separating the labels was not established. The model does not
+assess freshness, microbial safety or certified package pass/fail.
 
-## Current evidence
-- Original archive: 3,549 images, 3,123 annotations; all images decode.
-- Cross-split source/hash groups quarantined: 37 images excluded.
-- Cleaned splits: 3,313 train, 119 validation, 80 test images.
-- Five used labels; the unused COCO supercategory ID 0 is not made a sixth class.
-- 18 wrinkle training annotations; no wrinkle validation/test annotations.
-- Original archive SHA256 and detailed counts: [dataset audit](results/dataset_audit.json).
-- Count experiments: [results](results/baseline/summary.json), [candidate metrics](results/baseline/validation_metrics.csv).
-- Median constant count baseline beats the initial learned features; see [honest findings](results/DEVELOPMENT_FINDINGS.md).
-- **No final-test model predictions or detector results yet.**
+## Final evidence
 
-## Files
+- Original dataset: 3,549 images. Duplicate-source/hash quarantine excluded 37.
+- Retained images: 3,313 training, 119 validation, 80 test. Physical-tray independence is unknown.
+- Selected model: YOLOv8n, 320-pixel input, best epoch 13, frozen confidence 0.65.
+- Test: 37 true positives, 9 false positives, 42 missed annotations.
+- Pooled precision 80.4%, recall 46.8%, F1 0.592 at matching IoU >= 0.50.
+- Ultralytics test mAP50 0.2444, mAP50–95 0.0995.
+- Unsealed: 32/49 found. Packaging-error: 5/23. Loose-meat: 0/3. Twisted-meat: 0/4.
+- No held-out wrinkle examples, so its performance cannot be assessed.
+- Test count MAE: constant-one baseline 0.2875, detector 0.4875. Lower is better.
+
+See [validation analysis](results/detector_validation/REVIEW.md),
+[final-test analysis](results/final_test/FINAL_TEST_REVIEW.md), and
+[dataset audit](results/dataset_audit.json). AP uses Ultralytics evaluation;
+the fixed operating-point scores use our separate class-aware greedy matcher.
+Validation exports and ordinary prediction mode can use different postprocessing.
+
+## Repository structure
+
 | Location | Purpose |
 |---|---|
-| `rasher/data.py` | COCO audit, duplicate grouping, YOLO format export |
-| `rasher/features.py` | Fixed RGB/gradient features, no label leakage |
-| `rasher/baseline.py` | Mean/median, linear, tree, SVR and neural regression |
-| `rasher/detector.py` | Optional GPU training/validation/inference CLI |
-| `tests/` | Analytically checkable geometry, splitting, feature and metric tests |
-| `docs/api/` | Generated HTML source documentation; open `index.html` locally |
-| `docs/PROJECT_PLAN.md` | Scope, course mapping and experiment rules |
-| `docs/AI_USE.md` | Honest AI contribution log and student reflection prompts |
-| `results/` | Actual development results and test report |
+| `rasher/` | Dataset preparation, image descriptors, regression and detector CLI |
+| `scripts/` | Validation export analysis and frozen final-test scoring |
+| `models/` | Selected checkpoint, hash and attribution |
+| `tests/` | Analytical implementation tests |
+| `docs/api/index.html` | Generated HTML documentation, open locally in a browser |
+| `docs/AI_USE.md` | AI contribution disclosure and personal reflection |
+| `results/` | Metrics, prediction exports, provenance and test report |
+| `submission/` | Report, presentation and submission guidance |
 
-## Setup (Windows, Python 3.12)
-From a terminal in this repository:
+## Setup
+
+Windows with Python 3.12, from a terminal in the repository:
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
-For subsequent commands use `.\.venv\Scripts\python.exe` in place of `python`.
-On Linux/macOS use `python3 -m venv .venv` and `.venv/bin/python`.
-Dependencies are pinned for the CPU experiment; full GPU resolved dependencies must
-be saved with `python -m pip freeze > results/gpu-environment.txt` after installation.
+Use `.\.venv\Scripts\python.exe` in place of `python` below. On Linux/macOS,
+create the environment with `python3 -m venv .venv` and use `.venv/bin/python`.
+CPU requirements record the original baseline environment. The GPU run environment
+is recorded in `results/detector_validation/gpu-environment.txt`.
 
-## Obtain and prepare data
+## Review the final results without a GPU or dataset download
+
+The included manifest records the annotation boxes and split membership. It contains
+no image pixels. Re-score the saved predictions with the frozen checkpoint checksum:
+```powershell
+python -m scripts.score_final_test --manifest results/prepared_manifest.json --export results/final_test/export --weights models/yolov8n_320_best.pt --out results/reproduced_final_test
+```
+This reproduces the score from saved predictions. It does not re-run inference or
+perform a new independent experiment. Compare its `summary.json` with
+`results/final_test/summary.json`. Do not tune using the inspected test results.
+
+## Obtain images and reproduce the experiments
+
 Download **version 4, COCO JSON ZIP** from:
 https://universe.roboflow.com/hello-2aqe0/pork-rasher-error-packaging/dataset/4
-Keep the ZIP outside Git. The original file uploaded by the student is usable directly.
+
+The raw archive and image dataset are excluded from Git to keep the clone manageable.
+The original archive hash is recorded in the dataset audit.
 ```powershell
 python -m rasher prepare --zip "C:\path\Pork Rasher Error-Packaging-.v4i.coco.zip" --out data/prepared
 python -m rasher baseline --data data/prepared --out results/my_baseline
 ```
-Output directories must be new or empty, to avoid overwriting provenance. `data.yaml`
-contains a machine-specific absolute dataset path; regenerate preparation when moving
-machines. Source image filenames and raw data never become model input features.
+Preparation/baseline output directories must be new or empty. Preparation creates
+machine-specific paths in `data.yaml`, so regenerate it after moving machines.
+The regression task counts defect annotation boxes, not meat slices. Its training
+uses one representative per source and selects configurations by validation MAE.
 
-## CPU count experiment
-Target: number of annotation boxes per image (integer ground truth, continuous
-nonnegative predictions). One image per source is selected for this baseline to avoid
-unequal augmentation weighting. Preprocessing is fitted only on training images.
-Two feature grids (2x2 and 4x4) and a small predeclared model search are compared on
-validation MAE. RMSE, R2, fit time and batch prediction time are also recorded.
-Selection is validation-only; the test set remains reserved.
-
-Mean and median constant predictors matter: most images have around one annotation,
-so a complex model is useful only if it beats trivial predictions. Negative R2 is
-reported honestly and indicates weak performance against the evaluation-subset mean reference.
-
-![Validation experiments](results/baseline/validation_results.png)
-
-## GPU detector experiments (not yet executed)
-Hardware supplied: RTX 4060 Laptop 8 GB, Ryzen 7 7435HS, 24 GB RAM.
-Install GPU dependencies and confirm a CUDA-enabled PyTorch build:
+For GPU inference/training, first install an appropriate CUDA-enabled PyTorch build
+using https://pytorch.org/get-started/locally/ and then:
 ```powershell
 python -m pip install -r requirements-detector.txt
 python -c "import torch; print(torch.__version__); print(torch.cuda.is_available())"
+python -m rasher.detector predict --weights models/yolov8n_320_best.pt --imgsz 320 --conf 0.65 --source data/prepared/images/valid --name demo_320
 ```
-If the last command prints False, use the official Windows CUDA installation selector:
-https://pytorch.org/get-started/locally/ . Training with `--device 0` requires a working GPU.
+The recorded laptop used PyTorch 2.11.0+cu128, Ultralytics 8.4.175 and an RTX 4060
+Laptop GPU with 8 GB VRAM. The default device is GPU 0; use `--device cpu` if needed.
+`--conf` controls prediction mode only; AP evaluation retains its default confidence handling.
 
-Two controlled experiments; start with 320 as the cheaper run:
+To repeat the two development runs:
 ```powershell
-python -m rasher.detector train --imgsz 320 --epochs 50 --batch 8 --name yolov8n_320
-python -m rasher.detector train --imgsz 640 --epochs 50 --batch 8 --name yolov8n_640
+python -m rasher.detector train --imgsz 320 --epochs 50 --batch 8 --name rerun_320
+python -m rasher.detector train --imgsz 640 --epochs 50 --batch 8 --name rerun_640
 ```
-YOLOv8n pretrained weights download on first use (internet required). Batch 8 is an
-initial setting, not a measured memory guarantee; reduce to 4 if CUDA runs out of memory.
-Windows uses `workers=0`. Each experiment writes weights/curves under `runs/detect/`.
-Actual training time and memory usage have not yet been measured.
-
-```powershell
-python -m rasher.detector validate --weights runs/detect/yolov8n_640/weights/best.pt --name validation_640
-python -m rasher.detector predict --weights runs/detect/yolov8n_640/weights/best.pt --source data/prepared/images/valid --name demo
-```
-Only after selecting and freezing a model using validation:
-```powershell
-python -m rasher.detector final-test --weights runs/detect/yolov8n_640/weights/best.pt --name frozen_test --confirm-frozen-model
-```
-The 640 path above is an example, not a claim it is the selected model. Pass `--imgsz 320`
-when evaluating a 320 experiment. Counts must eventually be compared at a validation-
-selected confidence threshold, and localisation measured separately by mAP/precision/recall.
+Generic pretrained weights download on first use. Workers are zero for Windows.
+Use the actual output directory printed by Ultralytics. In the recorded environment,
+relative project paths resolved to `runs/detect/runs/detect/...`; do not assume a
+shorter path. The selected original checkpoint is provided under `models/`.
+A new run may differ due to software/hardware changes despite seed 42.
 
 ## Tests and documentation
+
 ```powershell
 python -m pytest -q --junitxml=results/tests.xml
-python -m pdoc rasher -o docs/api
+python -m pdoc rasher scripts.analyze_export scripts.score_final_test -o docs/api
 ```
-Inspect [test report](results/TEST_REPORT.md). Unit tests verify implementation; they do
-not establish predictive accuracy. All real model results remain separately labelled.
+See the [current test report](results/TEST_REPORT.md). Tests verify implementation,
+not the reliability of predictions. Original development findings retain their
+historical scope; final results above supersede their pending-experiment statements.
 
-## Known limitations
-Grouping removes identical-source and byte-identical cross-split overlap, not correlated
-neighbouring video frames or shared trays. The split is **not established tray-independent**.
-Missing annotations are not certified good packages. Rare classes and the 80-image test
-set limit conclusions. No performance claim is made for unseen production lines.
+## Documents and presentation demonstration
+
+- [Word report](submission/MMA3001_Project_Report.docx)
+- [Presentation with speaker notes](submission/MMA3001_Presentation.pptx)
+- [Submission and live demonstration guide](submission/README.md)
+
+The five-minute presentation must include a brief live view of the GitHub structure,
+HTML documentation and testing evidence, followed by three minutes of questions.
+Appointment booking/attendance and Moodle submission are the student's remaining actions.
 
 ## Licensing and AI
-Original code: [MIT](LICENSE). Dataset: CC BY 4.0; attribution and dependency conditions:
-[THIRD_PARTY.md](THIRD_PARTY.md). Optional Ultralytics components retain upstream terms.
-AI generated most initial code/docs; details and required student reflection:
-[AI_USE.md](docs/AI_USE.md). Course PDFs and credentials are not committed.
 
-## Submission checklist (pending)
-- 5-10 page report + references/appendices, submitted through Moodle.
-- Accessible final GitHub link + ZIP of a full repository clone, including Git history.
-- Functional main, README, HTML docs, licence, source, tests and test report.
-- Presentation/interview booked separately; student must explain all decisions/results.
+Original code: [MIT](LICENSE). Dataset annotations/images: CC BY 4.0, provider Hello.
+The included trained checkpoint derives from Ultralytics YOLOv8n and retains upstream
+licensing conditions. See [third-party attribution](THIRD_PARTY.md) and [model details](models/README.md).
+Course PDFs and credentials are not included. AI generated most initial code and prose.
+The student ran the GPU experiments and inspected shell outputs and epoch losses.
+See [AI contribution and reflection](docs/AI_USE.md).
