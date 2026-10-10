@@ -1,0 +1,93 @@
+{
+  "status": "FINAL TEST - no threshold search performed",
+  "images": 80,
+  "annotations": 79,
+  "weights_sha256": "fd747d8605efa6044401a2d50ac8969cf5c3fa2dededd3c7c282cf1a6c080732",
+  "frozen_selection": {
+    "status": "FROZEN BEFORE TEST EVALUATION",
+    "date": "2026-10-10",
+    "model": "yolov8n_320",
+    "best_epoch": 13,
+    "imgsz": 320,
+    "confidence": 0.65,
+    "iou_match": 0.5,
+    "weights_sha256": "fd747d8605efa6044401a2d50ac8969cf5c3fa2dededd3c7c282cf1a6c080732",
+    "selection": "Higher validation mAP50-95 among the two resolution runs, with mAP50 supporting selection. Confidence maximizes pooled class-aware F1 on the 0.05 to 0.95 step 0.05 grid; higher threshold breaks ties.",
+    "limitations": [
+      "Threshold chosen on validation; validation scores optimistic.",
+      "Pooled F1 is dominated by unsealed class.",
+      "Custom confidence-ordered one-to-one matching is separate from Ultralytics macro AP.",
+      "Validation exports use multi-label NMS; later deployment predict mode may use different postprocessing.",
+      "No tray-independent split is established.",
+      "Do not tune on final test results."
+    ]
+  },
+  "operating_point": {
+    "tp": 37,
+    "fp": 9,
+    "fn": 42,
+    "precision": 0.8043478260869565,
+    "recall": 0.46835443037974683,
+    "f1": 0.592,
+    "threshold": 0.65,
+    "count_mae": 0.4875,
+    "count_rmse": 0.8440971508067067,
+    "exact_count_images": 48,
+    "flagged_empty_images": 1,
+    "missed_positive_images": 26
+  },
+  "classes": {
+    "loose-meat": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "packaging-error": {
+      "tp": 5,
+      "fp": 4,
+      "fn": 18,
+      "precision": 0.5555555555555556,
+      "recall": 0.21739130434782608,
+      "f1": 0.3125
+    },
+    "twisted-meat": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "unsealed": {
+      "tp": 32,
+      "fp": 5,
+      "fn": 17,
+      "precision": 0.8648648648648649,
+      "recall": 0.6530612244897959,
+      "f1": 0.7441860465116279
+    },
+    "wrinkle": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0,
+      "recall": null,
+      "f1": 0
+    }
+  },
+  "count_baseline": {
+    "predicted_count": 1,
+    "mae": 0.2875,
+    "rmse": 0.5809475019311126
+  },
+  "ultralytics": {
+    "metrics/precision(B)": 0.5654373146747854,
+    "metrics/recall(B)": 0.24207232762363123,
+    "metrics/mAP50(B)": 0.24437029088927104,
+    "metrics/mAP50-95(B)": 0.09952872705331796,
+    "fitness": 0.09952872705331796
+  }
+}
