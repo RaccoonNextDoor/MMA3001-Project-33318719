@@ -1,0 +1,19 @@
+{
+  "status": "FROZEN BEFORE TEST EVALUATION",
+  "date": "2026-10-10",
+  "model": "yolov8n_320",
+  "best_epoch": 13,
+  "imgsz": 320,
+  "confidence": 0.65,
+  "iou_match": 0.5,
+  "weights_sha256": "fd747d8605efa6044401a2d50ac8969cf5c3fa2dededd3c7c282cf1a6c080732",
+  "selection": "Higher validation mAP50-95 among the two resolution runs, with mAP50 supporting selection. Confidence maximizes pooled class-aware F1 on the 0.05 to 0.95 step 0.05 grid; higher threshold breaks ties.",
+  "limitations": [
+    "Threshold chosen on validation; validation scores optimistic.",
+    "Pooled F1 is dominated by unsealed class.",
+    "Custom confidence-ordered one-to-one matching is separate from Ultralytics macro AP.",
+    "Validation exports use multi-label NMS; later deployment predict mode may use different postprocessing.",
+    "No tray-independent split is established.",
+    "Do not tune on final test results."
+  ]
+}
